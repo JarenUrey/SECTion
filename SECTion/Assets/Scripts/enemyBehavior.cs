@@ -5,6 +5,7 @@ using UnityEngine;
 public class enemyBehavior : MonoBehaviour, IDamage
 {
     public GameObject player;
+    public SpriteRenderer sprite;
     public float speed;
     public float detectionRange;
 
@@ -43,5 +44,12 @@ public class enemyBehavior : MonoBehaviour, IDamage
             dead = true;
             Destroy(gameObject);
         }
+    }
+
+    IEnumerator flashDamage()
+    {
+        sprite.color = Color.black;
+        yield return new WaitForSeconds(0.1f);
+        sprite.color = Color.white;
     }
 }

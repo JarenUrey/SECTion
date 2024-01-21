@@ -19,8 +19,9 @@ public class RevolverBullet : MonoBehaviour
         Destroy(gameObject, destroyTime);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("Collide");
         if (other.isTrigger)
         {
             return;
@@ -30,6 +31,7 @@ public class RevolverBullet : MonoBehaviour
 
         if (damageable != null && !other.CompareTag("Player"))
         {
+            Debug.Log("Hit");
             damageable.takeDamage(damage);
         }
 

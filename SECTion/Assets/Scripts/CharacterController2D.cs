@@ -21,23 +21,25 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] public GameObject shootPos;
     [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
+    [SerializeField] int damage;
+    [SerializeField] float shootDistance;
 
     bool isShooting;
 
     void Start()
     {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
-
-
     }
 
     void Update()
     {
         PlayerRotation();
+        Debug.DrawRay(transform.position, transform.up * shootDistance, Color.red);
 
         if (Input.GetButton("Fire1") && !isShooting)
         {
             StartCoroutine(Shoot());
+            //StartCoroutine(HitScan());
         }
     }
 
@@ -62,21 +64,51 @@ public class CharacterController2D : MonoBehaviour, IDamage
     {
         isShooting = true;
 
-        Debug.Log("shoot");
+       
         Ray ray = new Ray(transform.position, transform.forward);
         Vector3 targetPoint;
 
-        targetPoint = ray.GetPoint(50);
+        targetPoint = ray.GetPoint(shootDistance);
 
-        Vector3 shootDir = targetPoint - shootPos.transform.position;
+        Vector3 shootDir = shootPos.transform.position - targetPoint;
 
-        GameObject currBullet = Instantiate(bullet, shootPos.transform.position, Quaternion.identity);
+        GameObject currBullet = Instantiate(bullet, shootPos.transform.position, transform.rotation);
         currBullet.transform.forward = shootDir.normalized;
 
         yield return new WaitForSeconds(shootRate);
 
         isShooting = false;
     }    
+
+    IEnumerator HitScan()
+    {
+        isShooting = true;
+        RaycastHit hit;
+        Ray direction = new Ray(transform.position, transform.up);
+        Vector3 targetPoint;
+
+        targetPoint = direction.GetPoint(shootDistance);
+
+        Vector3 sDir = shootPos.transform.position - targetPoint;
+        Debug.Log("Shoot");
+        if (Physics.Raycast(transform.position, sDir, out hit, shootDistance))
+        {
+            Debug.Log(direction);
+            IDamage damagable = hit.collider.GetComponent<IDamage>();
+            if (damagable != null)
+            {
+                Debug.Log("Damagable");
+            }
+            if (hit.transform != transform && damagable != null)
+            {
+                Debug.Log("Hit");
+                damagable.takeDamage(damage);
+            }
+        }
+
+        yield return new WaitForSeconds(shootRate);
+        isShooting = false;
+    }
 
     public void takeDamage(int amount)
     {
