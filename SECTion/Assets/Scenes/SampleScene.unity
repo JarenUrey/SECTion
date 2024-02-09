@@ -431,6 +431,10 @@ MonoBehaviour:
   sprite: {fileID: 629890341}
   speed: 5
   detectionRange: 5
+  shootAngle: 90
+  hitRate: 1
+  attackRange: 2
+  attackDamage: 1
   Hp: 3
 --- !u!58 &629890345
 CircleCollider2D:
@@ -595,8 +599,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b15495db74a9aea4e9bc29de280dbf01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 1
-  m_MovementSmoothing: 0.05
+  sprite: {fileID: 709221203}
+  Health: 10
+  m_MovementSmoothing: 0.1
   m_WhatIsWall:
     serializedVersion: 2
     m_Bits: 0

@@ -7,6 +7,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 {
     [Header("===== Components =====")]
     private Rigidbody2D m_Rigidbody2D;
+    [SerializeField] SpriteRenderer sprite;
 
     [Header("===== Player Stats =====")]
     [SerializeField] public int Health;
@@ -113,5 +114,13 @@ public class CharacterController2D : MonoBehaviour, IDamage
     public void takeDamage(int amount)
     {
         Health -= amount;
+        StartCoroutine(flashDamage());
+    }
+
+    IEnumerator flashDamage()
+    {
+        sprite.color = Color.black;
+        yield return new WaitForSeconds(0.1f);
+        sprite.color = Color.white;
     }
 }
