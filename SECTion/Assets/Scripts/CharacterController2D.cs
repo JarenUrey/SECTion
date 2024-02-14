@@ -24,12 +24,15 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int damage;
     [SerializeField] float shootDistance;
+    [SerializeField] int maxAmmo;
+    int currAmmo;
 
     bool isShooting;
 
     void Start()
     {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
+        currAmmo = maxAmmo;
     }
 
     void Update()
@@ -63,22 +66,25 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     IEnumerator Shoot()
     {
-        isShooting = true;
+        if (currAmmo > 0)
+        {
+            isShooting = true;
+            currAmmo--;
 
-       
-        Ray ray = new Ray(transform.position, transform.forward);
-        Vector3 targetPoint;
+            Ray ray = new Ray(transform.position, transform.forward);
+            Vector3 targetPoint;
 
-        targetPoint = ray.GetPoint(shootDistance);
+            targetPoint = ray.GetPoint(shootDistance);
 
-        Vector3 shootDir = shootPos.transform.position - targetPoint;
+            Vector3 shootDir = shootPos.transform.position - targetPoint;
 
-        GameObject currBullet = Instantiate(bullet, shootPos.transform.position, transform.rotation);
-        currBullet.transform.forward = shootDir.normalized;
+            GameObject currBullet = Instantiate(bullet, shootPos.transform.position, transform.rotation);
+            currBullet.transform.forward = shootDir.normalized;
 
-        yield return new WaitForSeconds(shootRate);
+            yield return new WaitForSeconds(shootRate);
 
-        isShooting = false;
+            isShooting = false;
+        }
     }    
 
     IEnumerator HitScan()
