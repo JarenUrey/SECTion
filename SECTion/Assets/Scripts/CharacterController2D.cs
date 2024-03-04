@@ -8,6 +8,17 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [Header("===== Components =====")]
     private Rigidbody2D m_Rigidbody2D;
     [SerializeField] SpriteRenderer sprite;
+    [SerializeField] Animator animator;
+    [SerializeField] float animationTime;
+    [SerializeField] AudioSource aud;
+
+    [Header("===== Audio =====")]
+    [SerializeField] AudioClip audRevolverShot;
+    [Range(0, 1)][SerializeField] float audRevolerShotVol;
+    [SerializeField] AudioClip audRevolverEmpty;
+    [Range(0, 1)][SerializeField] float audRevolverEmptyVol;
+    [SerializeField] AudioClip audRevolverReload;
+    [Range(0, 1)][SerializeField] float audRevolverReloadvol;
 
     [Header("===== Player Stats =====")]
     [SerializeField] public int Health;
@@ -25,9 +36,11 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] int damage;
     [SerializeField] float shootDistance;
     [SerializeField] int maxAmmo;
+    [SerializeField] float reloadSpeed;
     int currAmmo;
 
     bool isShooting;
+    bool isReloading;
 
     void Start()
     {
@@ -40,10 +53,16 @@ public class CharacterController2D : MonoBehaviour, IDamage
         PlayerRotation();
         Debug.DrawRay(transform.position, transform.up * shootDistance, Color.red);
 
-        if (Input.GetButton("Fire1") && !isShooting)
+        if (Input.GetButton("Fire1") && !isShooting && !isReloading)
         {
             StartCoroutine(Shoot());
             //StartCoroutine(HitScan());
+        }
+
+        if (Input.GetButton("Jump") && !isReloading && currAmmo != maxAmmo)
+        {
+            //change "jump" to the "r" key later
+            StartCoroutine(Reload());
         }
     }
 
@@ -68,6 +87,8 @@ public class CharacterController2D : MonoBehaviour, IDamage
     {
         if (currAmmo > 0)
         {
+            animator.SetBool("IsShooting", true);
+            aud.PlayOneShot(audRevolverShot, audRevolerShotVol);
             isShooting = true;
             currAmmo--;
 
@@ -81,11 +102,30 @@ public class CharacterController2D : MonoBehaviour, IDamage
             GameObject currBullet = Instantiate(bullet, shootPos.transform.position, transform.rotation);
             currBullet.transform.forward = shootDir.normalized;
 
+            yield return new WaitForSeconds(animationTime);
+
+            animator.SetBool("IsShooting", false);
             yield return new WaitForSeconds(shootRate);
 
             isShooting = false;
         }
+        else
+        {
+            isShooting = true;
+            aud.PlayOneShot(audRevolverEmpty, audRevolverEmptyVol);
+            yield return new WaitForSeconds(shootRate);
+            isShooting = false;
+        }
     }    
+
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        aud.PlayOneShot(audRevolverReload, audRevolverReloadvol);
+        yield return new WaitForSeconds(reloadSpeed);
+        currAmmo = maxAmmo;
+        isReloading = false;
+    }
 
     IEnumerator HitScan()
     {

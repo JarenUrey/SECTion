@@ -27,11 +27,18 @@ public class enemyBehavior : MonoBehaviour, IDamage
         {
             distance = Vector2.Distance(transform.position, player.transform.position);
             Vector2 direction = player.transform.position - transform.position;
-
+            
+            if (distance < 2)
+            {
+                playerInRange = true;
+            }
 
             //face player when chasing
             direction.Normalize();
             angleToPlayer = Vector2.Angle(new Vector2(player.transform.position.x, player.transform.position.y), transform.forward);
+
+            Vector2 playerDir = new Vector2(player.transform.position.x - transform.position.x, player.transform.position.y - transform.position.y);
+            transform.right = playerDir;
         }
 
         //detection range
@@ -40,11 +47,11 @@ public class enemyBehavior : MonoBehaviour, IDamage
                 //transform.rotation = Quaternion.Euler(Vector3.forward * angle);
         }
 
-        if (isAttacking && playerInRange)
+        if (!isAttacking && playerInRange)
         {
             //Note to Jaren, if check is not working, fix later
-            StartCoroutine(attack());
             Debug.Log("Attack");
+            StartCoroutine(attack());
         }
         
     }
@@ -55,11 +62,12 @@ public class enemyBehavior : MonoBehaviour, IDamage
         StartCoroutine(flashAttack());
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, attackRange))
+        if (Physics.Raycast(transform.position, transform.right, out hit, attackRange))
         {
             IDamage damagable = hit.collider.GetComponent<IDamage>();
             if (hit.transform != transform && damagable != null)
             {
+                Debug.Log("Damage");
                 damagable.takeDamage(attackDamage);
             }
         }
