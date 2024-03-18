@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -46,6 +47,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         currAmmo = maxAmmo;
+        updateRevolverAmmoCount();
     }
 
     void Update()
@@ -59,7 +61,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
             //StartCoroutine(HitScan());
         }
 
-        if (Input.GetButton("Jump") && !isReloading && currAmmo != maxAmmo)
+        if (Input.GetKeyDown(KeyCode.R) && !isReloading && currAmmo != maxAmmo)
         {
             //change "jump" to the "r" key later
             StartCoroutine(Reload());
@@ -101,7 +103,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
             GameObject currBullet = Instantiate(bullet, shootPos.transform.position, transform.rotation);
             currBullet.transform.forward = shootDir.normalized;
-
+            updateRevolverAmmoCount();
             yield return new WaitForSeconds(animationTime);
 
             animator.SetBool("IsShooting", false);
@@ -124,6 +126,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
         aud.PlayOneShot(audRevolverReload, audRevolverReloadvol);
         yield return new WaitForSeconds(reloadSpeed);
         currAmmo = maxAmmo;
+        updateRevolverAmmoCount();
         isReloading = false;
     }
 
@@ -168,5 +171,47 @@ public class CharacterController2D : MonoBehaviour, IDamage
         sprite.color = Color.black;
         yield return new WaitForSeconds(0.1f);
         sprite.color = Color.white;
+    }
+
+    void updateRevolverAmmoCount()
+    {
+        if (currAmmo == maxAmmo)
+        {
+            GameManager.instance.currRevolverAmmo.SetActive(false);
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverFiveShot;
+            GameManager.instance.currRevolverAmmo.SetActive(true);
+        }
+
+        if (currAmmo == 4)
+        {
+            GameManager.instance.currRevolverAmmo.SetActive(false);
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverFourShot;
+            GameManager.instance.currRevolverAmmo.SetActive(true);
+        }
+
+        if (currAmmo == 3)
+        {
+            GameManager.instance.currRevolverAmmo.SetActive(false);
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverThreeShot;
+            GameManager.instance.currRevolverAmmo.SetActive(true);
+        }
+        if (currAmmo == 2)
+        {
+            GameManager.instance.currRevolverAmmo.SetActive(false);
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverTwoShot;
+            GameManager.instance.currRevolverAmmo.SetActive(true);
+        }
+        if (currAmmo == 1)
+        {
+            GameManager.instance.currRevolverAmmo.SetActive(false);
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverOneShot;
+            GameManager.instance.currRevolverAmmo.SetActive(true);
+        }
+        if (currAmmo == 0)
+        {
+            GameManager.instance.currRevolverAmmo.SetActive(false);
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverZeroShot;
+            GameManager.instance.currRevolverAmmo.SetActive(true);
+        }
     }
 }
