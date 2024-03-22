@@ -18,7 +18,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] public GameObject currRevolverAmmo;
     [SerializeField] public GameObject revolverFiveShot;
-    [SerializeField] public GameObject revolverFourShot;
+    [SerializeField] public GameObject revolverFourShot1;
+    [SerializeField] public GameObject revolverFourShot2;
     [SerializeField] public GameObject revolverThreeShot;
     [SerializeField] public GameObject revolverTwoShot;
     [SerializeField] public GameObject revolverOneShot;

@@ -16,6 +16,8 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [Header("===== Audio =====")]
     [SerializeField] AudioClip audRevolverShot;
     [Range(0, 1)][SerializeField] float audRevolerShotVol;
+    [SerializeField] AudioClip audRevolverCock;
+    [Range(0, 1)][SerializeField] float audRevolerCockVol;
     [SerializeField] AudioClip audRevolverEmpty;
     [Range(0, 1)][SerializeField] float audRevolverEmptyVol;
     [SerializeField] AudioClip audRevolverReload;
@@ -47,7 +49,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         currAmmo = maxAmmo;
-        updateRevolverAmmoCount();
+        UpdateRevolverAmmoCount();
     }
 
     void Update()
@@ -103,12 +105,13 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
             GameObject currBullet = Instantiate(bullet, shootPos.transform.position, transform.rotation);
             currBullet.transform.forward = shootDir.normalized;
-            updateRevolverAmmoCount();
+            UpdateRevolverAmmoCount();
             yield return new WaitForSeconds(animationTime);
 
             animator.SetBool("IsShooting", false);
-            yield return new WaitForSeconds(shootRate);
-
+            yield return new WaitForSeconds(shootRate - 0.5f);
+            aud.PlayOneShot(audRevolverCock, audRevolerCockVol);
+            yield return new WaitForSeconds(0.5f);
             isShooting = false;
         }
         else
@@ -126,7 +129,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
         aud.PlayOneShot(audRevolverReload, audRevolverReloadvol);
         yield return new WaitForSeconds(reloadSpeed);
         currAmmo = maxAmmo;
-        updateRevolverAmmoCount();
+        UpdateRevolverAmmoCount();
         isReloading = false;
     }
 
@@ -173,7 +176,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
         sprite.color = Color.white;
     }
 
-    void updateRevolverAmmoCount()
+    void UpdateRevolverAmmoCount()
     {
         if (currAmmo == maxAmmo)
         {
@@ -185,7 +188,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
         if (currAmmo == 4)
         {
             GameManager.instance.currRevolverAmmo.SetActive(false);
-            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverFourShot;
+            GameManager.instance.currRevolverAmmo = GameManager.instance.revolverFourShot2;
             GameManager.instance.currRevolverAmmo.SetActive(true);
         }
 

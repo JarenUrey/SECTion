@@ -607,6 +607,8 @@ MonoBehaviour:
   aud: {fileID: 709221211}
   audRevolverShot: {fileID: 8300000, guid: 16f1b2646682f1c43ba1df063fe0eebc, type: 3}
   audRevolerShotVol: 1
+  audRevolverCock: {fileID: 8300000, guid: 3e0d17b42182ee043ac8d16ed293f13b, type: 3}
+  audRevolerCockVol: 1
   audRevolverEmpty: {fileID: 8300000, guid: 695aa2b7e9f76444189b3e1bfaceabac, type: 3}
   audRevolverEmptyVol: 0.5
   audRevolverReload: {fileID: 8300000, guid: 1271c3ddf2f3cfc40bafa975e7e6e3ab, type: 3}
@@ -790,6 +792,11 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1062546852 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 531225722881264721, guid: bc22c0d55a9cd284c82b130dc1d113a5, type: 3}
+  m_PrefabInstance: {fileID: 6821007033070239789}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1904935819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1039,6 +1046,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3385502285029757908, guid: bc22c0d55a9cd284c82b130dc1d113a5, type: 3}
+      propertyPath: revolverFourShot1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385502285029757908, guid: bc22c0d55a9cd284c82b130dc1d113a5, type: 3}
+      propertyPath: revolverFourShot2
+      value: 
+      objectReference: {fileID: 1062546852}
     - target: {fileID: 7828765736923932059, guid: bc22c0d55a9cd284c82b130dc1d113a5, type: 3}
       propertyPath: m_Name
       value: UI
