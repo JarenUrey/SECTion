@@ -9,11 +9,13 @@ public class GameManager : MonoBehaviour
 
     [Header("---- Player Stuff ----")]
     public GameObject player;
-    public CharacterController2D characterController2D;
+    public CharacterController2D controller;
+    public GameObject PlayerSpawnPos;
 
     [Header("---- UI ----")]
     [SerializeField] GameObject menuActive;
     [SerializeField] GameObject menuPause;
+    [SerializeField] GameObject menuLose;
     [SerializeField] public GameObject revolverAmmoCount;
 
     [SerializeField] public GameObject currRevolverAmmo;
@@ -34,6 +36,7 @@ public class GameManager : MonoBehaviour
         instance = this;
         timeScaleOrig = Time.timeScale;
         player = GameObject.FindWithTag("Player");
+        PlayerSpawnPos = GameObject.FindWithTag("Player Spawn Pos");
     }
 
     // Update is called once per frame
@@ -51,6 +54,7 @@ public class GameManager : MonoBehaviour
     {
         isPaused = !isPaused;
         Time.timeScale = 0;
+        controller.enabled = false;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
     }
@@ -60,8 +64,15 @@ public class GameManager : MonoBehaviour
         isPaused = !isPaused;
         Time.timeScale = timeScaleOrig;
         Cursor.visible = false;
-
+        controller.enabled = true;
         menuActive.SetActive(false);
         menuActive = null;
+    }
+
+    public void youLose()
+    {
+        statePause();
+        menuActive = menuLose;
+        menuActive.SetActive(true);
     }
 }

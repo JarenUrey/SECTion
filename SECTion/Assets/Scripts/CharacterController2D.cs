@@ -12,6 +12,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] Animator animator;
     [SerializeField] float animationTime;
     [SerializeField] AudioSource aud;
+    [SerializeField] CharacterController2D controller;
 
     [Header("===== Audio =====")]
     [SerializeField] AudioClip audRevolverShot;
@@ -47,6 +48,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     void Start()
     {
+        spawnPlayer();
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         currAmmo = maxAmmo;
         UpdateRevolverAmmoCount();
@@ -60,12 +62,10 @@ public class CharacterController2D : MonoBehaviour, IDamage
         if (Input.GetButton("Fire1") && !isShooting && !isReloading)
         {
             StartCoroutine(Shoot());
-            //StartCoroutine(HitScan());
         }
 
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && currAmmo != maxAmmo)
         {
-            //change "jump" to the "r" key later
             StartCoroutine(Reload());
         }
     }
@@ -133,40 +133,15 @@ public class CharacterController2D : MonoBehaviour, IDamage
         isReloading = false;
     }
 
-    IEnumerator HitScan()
-    {
-        isShooting = true;
-        RaycastHit hit;
-        Ray direction = new Ray(transform.position, transform.up);
-        Vector3 targetPoint;
-
-        targetPoint = direction.GetPoint(shootDistance);
-
-        Vector3 sDir = shootPos.transform.position - targetPoint;
-        Debug.Log("Shoot");
-        if (Physics.Raycast(transform.position, sDir, out hit, shootDistance))
-        {
-            Debug.Log(direction);
-            IDamage damagable = hit.collider.GetComponent<IDamage>();
-            if (damagable != null)
-            {
-                Debug.Log("Damagable");
-            }
-            if (hit.transform != transform && damagable != null)
-            {
-                Debug.Log("Hit");
-                damagable.takeDamage(damage);
-            }
-        }
-
-        yield return new WaitForSeconds(shootRate);
-        isShooting = false;
-    }
-
     public void takeDamage(int amount)
     {
         Health -= amount;
         StartCoroutine(flashDamage());
+
+        if (Health <= 0)
+        {
+            GameManager.instance.youLose();
+        }
     }
 
     IEnumerator flashDamage()
@@ -175,6 +150,14 @@ public class CharacterController2D : MonoBehaviour, IDamage
         yield return new WaitForSeconds(0.1f);
         sprite.color = Color.white;
     }
+
+    public void spawnPlayer()
+    {
+        controller.enabled = false;
+        transform.position = GameManager.instance.PlayerSpawnPos.transform.position;
+        controller.enabled = true;
+    }
+
 
     void UpdateRevolverAmmoCount()
     {

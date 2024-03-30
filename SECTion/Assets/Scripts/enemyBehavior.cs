@@ -1,3 +1,4 @@
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,10 @@ public class enemyBehavior : MonoBehaviour, IDamage
     [Header("---- Components ----")]
     [SerializeField] GameObject player;
     [SerializeField] SpriteRenderer sprite;
-    //[SerializeField] UnityEngine.AI.NavMeshAgent agent;
     [SerializeField] Animator anim;
     [SerializeField] Collider2D damageCol;
+    [SerializeField] AIPath movementScript;
+    [SerializeField] AIDestinationSetter destinationSetter;
 
     [Header("---- Enemy Stats ----")]
     [SerializeField] public int Hp;
@@ -65,9 +67,7 @@ public class enemyBehavior : MonoBehaviour, IDamage
         IDamage damage = player.GetComponent<IDamage>();
         if (damage != null)
         {
-            Debug.LogError("player");
             damage.takeDamage(attackDamage);
-            Debug.LogError("Damaged");
         }
 
         yield return new WaitForSeconds(hitRate);
@@ -82,6 +82,8 @@ public class enemyBehavior : MonoBehaviour, IDamage
 
         if (Hp <= 0)
         {
+            movementScript.enabled = false;
+            destinationSetter.enabled = false;
             dead = true;
             damageCol.enabled = false;
             StopAllCoroutines();
