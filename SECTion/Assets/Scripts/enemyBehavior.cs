@@ -1,59 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class enemyBehavior : MonoBehaviour, IDamage
 {
-    public GameObject player;
-    public SpriteRenderer sprite;
+    [Header("---- Components ----")]
+    [SerializeField] GameObject player;
+    [SerializeField] SpriteRenderer sprite;
+    //[SerializeField] UnityEngine.AI.NavMeshAgent agent;
+    [SerializeField] Animator anim;
+    [SerializeField] Collider2D damageCol;
+
+    [Header("---- Enemy Stats ----")]
+    [SerializeField] public int Hp;
     [SerializeField] public float speed;
-    public float detectionRange;
     [SerializeField] int shootAngle;
+
+    [Header("---- Attack stats ----")]
+    [SerializeField] int hitRange;
+    [SerializeField] int targetFaceSpeed;
     [SerializeField] float hitRate;
     [SerializeField] int attackRange;
     [SerializeField] int attackDamage;
 
+    public bool dead;
     private float distance;
     private float angleToPlayer;
-    [SerializeField] public int Hp;
-    bool dead;
+    Vector2 playerDr;
+    public float detectionRange;
     bool isAttacking;
     bool playerInRange;
 
+    void Start()
+    {
+        dead = false;
+    }
+
     void Update()
     {
-        //follow player
-        if (!dead)
+        //Checks to see if the enemy is alive
+        if (dead != true)
         {
-            distance = Vector2.Distance(transform.position, player.transform.position);
-            Vector2 direction = player.transform.position - transform.position;
-            
-            if (distance < 2)
+            if (playerInRange == true && !isAttacking)
             {
-                playerInRange = true;
+                StartCoroutine(attack());
             }
-
-            //face player when chasing
-            direction.Normalize();
-            angleToPlayer = Vector2.Angle(new Vector2(player.transform.position.x, player.transform.position.y), transform.forward);
-
-            Vector2 playerDir = new Vector2(player.transform.position.x - transform.position.x, player.transform.position.y - transform.position.y);
-            transform.right = playerDir;
-        }
-
-        //detection range
-        if(distance < detectionRange){
-                transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, speed * Time.deltaTime);
-                //transform.rotation = Quaternion.Euler(Vector3.forward * angle);
-        }
-
-        if (!isAttacking && playerInRange)
-        {
-            //Note to Jaren, if check is not working, fix later
-            Debug.Log("Attack");
-            StartCoroutine(attack());
         }
         
+    }
+
+    void faceTarget()
+    {
+        Quaternion rot = Quaternion.LookRotation(playerDr);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * targetFaceSpeed);
     }
 
     IEnumerator attack()
@@ -61,15 +61,13 @@ public class enemyBehavior : MonoBehaviour, IDamage
         isAttacking = true;
         StartCoroutine(flashAttack());
 
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.right, out hit, attackRange))
+        
+        IDamage damage = player.GetComponent<IDamage>();
+        if (damage != null)
         {
-            IDamage damagable = hit.collider.GetComponent<IDamage>();
-            if (hit.transform != transform && damagable != null)
-            {
-                Debug.Log("Damage");
-                damagable.takeDamage(attackDamage);
-            }
+            Debug.LogError("player");
+            damage.takeDamage(attackDamage);
+            Debug.LogError("Damaged");
         }
 
         yield return new WaitForSeconds(hitRate);
@@ -85,7 +83,9 @@ public class enemyBehavior : MonoBehaviour, IDamage
         if (Hp <= 0)
         {
             dead = true;
-            Destroy(gameObject);
+            damageCol.enabled = false;
+            StopAllCoroutines();
+            //Destroy(gameObject);
         }
     }
 
@@ -101,5 +101,21 @@ public class enemyBehavior : MonoBehaviour, IDamage
         sprite.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         sprite.color = Color.white;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerInRange = false;
+        }
     }
 }
