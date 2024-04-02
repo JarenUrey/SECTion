@@ -13,6 +13,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] float animationTime;
     [SerializeField] AudioSource aud;
     [SerializeField] CharacterController2D controller;
+    [SerializeField] public Rigidbody2D rb;
 
     [Header("===== Audio =====")]
     [SerializeField] AudioClip audRevolverShot;
@@ -26,6 +27,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     [Header("===== Player Stats =====")]
     [SerializeField] public int Health;
+    [SerializeField] public float speed;
 
     [Header("===== Movement =====")]
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = 0.05f;
@@ -45,6 +47,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     bool isShooting;
     bool isReloading;
+    Vector2 move;
 
     void Start()
     {
@@ -56,8 +59,11 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     void Update()
     {
-        PlayerRotation();
+        //PlayerRotation();
         Debug.DrawRay(transform.position, transform.up * shootDistance, Color.red);
+
+        move.x = Input.GetAxisRaw("Horizontal") * speed;
+        move.y = Input.GetAxisRaw("Vertical") * speed;
 
         if (Input.GetButton("Fire1") && !isShooting && !isReloading)
         {
@@ -70,21 +76,28 @@ public class CharacterController2D : MonoBehaviour, IDamage
         }
     }
 
+    private void FixedUpdate()
+    {
+        Move(move.x, move.y);
+        PlayerRotation();
+    }
+
     public void Move(float hMove, float vMove)
     {
         //Might need to update to include the X velocity
-        Vector3 targetvelocity = new Vector2(hMove * 10f, vMove * 10f);
+        Vector2 targetvelocity = new Vector2(hMove, vMove);
         m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetvelocity, ref m_Velocity, m_MovementSmoothing);
 
     }
 
     private void PlayerRotation()
     {
-        Vector3 mousePosition = Input.mousePosition;
+        Vector2 mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-        Vector2 direction = new Vector2(mousePosition.x - transform.position.x, mousePosition.y - transform.position.y);
-        transform.up = direction;
+        Vector2 lookDir = mousePosition - rb.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
+        rb.rotation = angle;
     }
 
     IEnumerator Shoot()

@@ -51,7 +51,7 @@ MonoBehaviour:
   rb: {fileID: 6186921717912132216}
   damage: 1
   speed: 8000
-  destroyTime: 1
+  destroyTime: 10
 --- !u!212 &3306552533068193627
 SpriteRenderer:
   m_ObjectHideFlags: 0
