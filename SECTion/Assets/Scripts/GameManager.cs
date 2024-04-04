@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
     public bool isPaused;
     float timeScaleOrig;
 
-    // Start is called before the first frame update
     void Awake()
     {
         instance = this;
@@ -39,9 +38,9 @@ public class GameManager : MonoBehaviour
         PlayerSpawnPos = GameObject.FindWithTag("Player Spawn Pos");
     }
 
-    // Update is called once per frame
     void Update()
     {
+        //when the player presses ESC
         if(Input.GetButtonDown("Cancel"))
         {
             statePause();

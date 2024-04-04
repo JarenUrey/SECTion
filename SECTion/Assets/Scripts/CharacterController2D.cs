@@ -43,8 +43,9 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] float shootDistance;
     [SerializeField] int maxAmmo;
     [SerializeField] float reloadSpeed;
+    
     int currAmmo;
-
+    int HPOrig;
     bool isShooting;
     bool isReloading;
     Vector2 move;
@@ -59,23 +60,26 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     void Update()
     {
-        //PlayerRotation();
+        //Used for debugging where the player is looking
         Debug.DrawRay(transform.position, transform.up * shootDistance, Color.red);
 
         move.x = Input.GetAxisRaw("Horizontal") * speed;
         move.y = Input.GetAxisRaw("Vertical") * speed;
 
+        //M1 is shoot
         if (Input.GetButton("Fire1") && !isShooting && !isReloading)
         {
             StartCoroutine(Shoot());
         }
 
+        //R is reload
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && currAmmo != maxAmmo)
         {
             StartCoroutine(Reload());
         }
     }
 
+    //used to run parallel to the main update function. To deal with player movement.
     private void FixedUpdate()
     {
         Move(move.x, move.y);
@@ -84,7 +88,6 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     public void Move(float hMove, float vMove)
     {
-        //Might need to update to include the X velocity
         Vector2 targetvelocity = new Vector2(hMove, vMove);
         m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetvelocity, ref m_Velocity, m_MovementSmoothing);
 
@@ -102,6 +105,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     IEnumerator Shoot()
     {
+        //checks to see if player has ammo
         if (currAmmo > 0)
         {
             animator.SetBool("IsShooting", true);
@@ -109,6 +113,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
             isShooting = true;
             currAmmo--;
 
+            //needs to have a target point for the bullet to fly towards
             Ray ray = new Ray(transform.position, transform.forward);
             Vector3 targetPoint;
 

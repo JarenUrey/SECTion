@@ -10,6 +10,7 @@ public class enemyBehavior : MonoBehaviour, IDamage
     [SerializeField] GameObject player;
     [SerializeField] SpriteRenderer sprite;
     [SerializeField] Animator anim;
+    [SerializeField] float animationTime;
     [SerializeField] Collider2D damageCol;
     [SerializeField] AIPath movementScript;
     [SerializeField] AIDestinationSetter destinationSetter;
@@ -18,6 +19,7 @@ public class enemyBehavior : MonoBehaviour, IDamage
     [SerializeField] public int Hp;
     [SerializeField] public float speed;
     [SerializeField] int shootAngle;
+    [SerializeField] float despawnTime;
 
     [Header("---- Attack stats ----")]
     [SerializeField] int hitRange;
@@ -26,9 +28,8 @@ public class enemyBehavior : MonoBehaviour, IDamage
     [SerializeField] int attackRange;
     [SerializeField] int attackDamage;
 
+    int HPOrig;
     public bool dead;
-    private float distance;
-    private float angleToPlayer;
     Vector2 playerDr;
     public float detectionRange;
     bool isAttacking;
@@ -36,6 +37,7 @@ public class enemyBehavior : MonoBehaviour, IDamage
 
     void Start()
     {
+        HPOrig = Hp;
         dead = false;
     }
 
@@ -52,23 +54,22 @@ public class enemyBehavior : MonoBehaviour, IDamage
         
     }
 
-    void faceTarget()
-    {
-        Quaternion rot = Quaternion.LookRotation(playerDr);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rot, Time.deltaTime * targetFaceSpeed);
-    }
-
     IEnumerator attack()
     {
+        anim.SetBool("IsAttacking", true);
         isAttacking = true;
+        //used as a temporary marker for attacking
         StartCoroutine(flashAttack());
-
         
+        //checks to see if object can be damaged
         IDamage damage = player.GetComponent<IDamage>();
         if (damage != null)
         {
             damage.takeDamage(attackDamage);
         }
+
+        yield return new WaitForSeconds(animationTime);
+        anim.SetBool("IsAttacking", false);
 
         yield return new WaitForSeconds(hitRate);
         isAttacking = false;
@@ -82,15 +83,18 @@ public class enemyBehavior : MonoBehaviour, IDamage
 
         if (Hp <= 0)
         {
+            //is dead
             movementScript.enabled = false;
             destinationSetter.enabled = false;
             dead = true;
             damageCol.enabled = false;
             StopAllCoroutines();
-            //Destroy(gameObject);
+
+            StartCoroutine(die());
         }
     }
 
+    //temp for tracking for when taking damage
     IEnumerator flashDamage()
     {
         sprite.color = Color.black;
@@ -98,6 +102,7 @@ public class enemyBehavior : MonoBehaviour, IDamage
         sprite.color = Color.white;
     }
 
+    //temp for tracking for when attacking
     IEnumerator flashAttack()
     {
         sprite.color = Color.red;
@@ -105,6 +110,13 @@ public class enemyBehavior : MonoBehaviour, IDamage
         sprite.color = Color.white;
     }
 
+    IEnumerator die()
+    {
+        yield return new WaitForSeconds(despawnTime);
+        Destroy(gameObject);
+    }
+
+    //used as rudementary detection radius 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

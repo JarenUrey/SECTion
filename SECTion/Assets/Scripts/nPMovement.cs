@@ -23,6 +23,5 @@ public class nPMovement : MonoBehaviour
     private void FixedUpdate()
     {
         controller.Move(horizontalMove * Time.deltaTime, verticalMove * Time.deltaTime);
-        //rb.MovePosition(rb.position + move * runSpeed * Time.fixedDeltaTime);
     }
 }
