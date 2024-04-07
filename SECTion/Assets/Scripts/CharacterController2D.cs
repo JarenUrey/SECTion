@@ -43,7 +43,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] float shootDistance;
     [SerializeField] int maxAmmo;
     [SerializeField] float reloadSpeed;
-    
+
     int currAmmo;
     int HPOrig;
     bool isShooting;
@@ -52,7 +52,11 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     void Start()
     {
-        spawnPlayer();
+        HPOrig = Health;
+        if (GameManager.instance.PlayerSpawnPos != null)
+        {
+            spawnPlayer();
+        }
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
         currAmmo = maxAmmo;
         UpdateRevolverAmmoCount();
@@ -155,7 +159,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     {
         Health -= amount;
         StartCoroutine(flashDamage());
-
+        UpdatePlayerHealth();
         if (Health <= 0)
         {
             GameManager.instance.youLose();
@@ -171,9 +175,16 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     public void spawnPlayer()
     {
+        Health = HPOrig;
+        GameManager.instance.playerHealthBar.CrossFadeAlpha(0, 0, false);
         controller.enabled = false;
         transform.position = GameManager.instance.PlayerSpawnPos.transform.position;
         controller.enabled = true;
+    }
+
+    void UpdatePlayerHealth()
+    {
+        GameManager.instance.playerHealthBar.CrossFadeAlpha((1 - ((float)Health / HPOrig)), (float).8, false);
     }
 
 

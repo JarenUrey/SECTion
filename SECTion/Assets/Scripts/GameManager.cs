@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject menuActive;
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuLose;
+
+    [SerializeField] public GameObject healthActive;
+    [SerializeField] public Image playerHealthBar;
+
     [SerializeField] public GameObject revolverAmmoCount;
 
     [SerializeField] public GameObject currRevolverAmmo;
@@ -36,6 +40,7 @@ public class GameManager : MonoBehaviour
         timeScaleOrig = Time.timeScale;
         player = GameObject.FindWithTag("Player");
         PlayerSpawnPos = GameObject.FindWithTag("Player Spawn Pos");
+        healthActive.SetActive(true);
     }
 
     void Update()
