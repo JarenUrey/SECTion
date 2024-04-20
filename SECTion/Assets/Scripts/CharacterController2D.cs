@@ -14,6 +14,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [SerializeField] AudioSource aud;
     [SerializeField] CharacterController2D controller;
     [SerializeField] public Rigidbody2D rb;
+    [SerializeField] public mousePosition cursor;
 
     [Header("===== Audio =====")]
     [SerializeField] AudioClip audRevolverShot;
@@ -28,6 +29,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     [Header("===== Player Stats =====")]
     [SerializeField] public int Health;
     [SerializeField] public float speed;
+    [SerializeField] public float ADSwalkingSpeed;
 
     [Header("===== Movement =====")]
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = 0.05f;
@@ -46,6 +48,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
 
     int currAmmo;
     int HPOrig;
+    float speedOrig;
     bool isShooting;
     bool isReloading;
     Vector2 move;
@@ -53,6 +56,7 @@ public class CharacterController2D : MonoBehaviour, IDamage
     void Start()
     {
         HPOrig = Health;
+        speedOrig = speed;
         if (GameManager.instance.PlayerSpawnPos != null)
         {
             spawnPlayer();
@@ -71,9 +75,21 @@ public class CharacterController2D : MonoBehaviour, IDamage
         move.y = Input.GetAxisRaw("Vertical") * speed;
 
         //M1 is shoot
-        if (Input.GetButton("Fire1") && !isShooting && !isReloading)
+        if (Input.GetButton("Fire1") && !isShooting && !isReloading && cursor.aiming)
         {
             StartCoroutine(Shoot());
+        }
+
+        if (Input.GetButton("Fire2"))
+        {
+            cursor.aiming = true;
+            speed = ADSwalkingSpeed;
+        }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            cursor.aiming = false;
+            speed = speedOrig;
         }
 
         //R is reload
