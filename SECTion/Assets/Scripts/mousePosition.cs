@@ -35,9 +35,4 @@ public class mousePosition : MonoBehaviour{
         }
     }
 
-    public void changeCursorSprite()
-    {
-
-    }
-
 }
