@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 2082423257}
   - component: {fileID: 2082423256}
   m_Layer: 0
-  m_Name: A*
+  m_Name: EnemyPathfinding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -966,7 +966,7 @@ PrefabInstance:
     - target: {fileID: 2457376096931049276, guid: 9765ba3ebf3bf0e49af2e936ffa2c8e2, type: 3}
       propertyPath: cursorDefault
       value: 
-      objectReference: {fileID: -2413806693520163455, guid: f18358fb5a4c86b47a698caf4946f485, type: 3}
+      objectReference: {fileID: 21300000, guid: 8d2f9091faa89544480e86f50928649f, type: 3}
     - target: {fileID: 4499457217839010857, guid: 9765ba3ebf3bf0e49af2e936ffa2c8e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.71
